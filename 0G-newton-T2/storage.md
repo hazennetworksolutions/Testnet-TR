@@ -56,12 +56,14 @@ source ~/.cargo/env
 ```
 ### Repoyu çekelim
 ```
+cd
+systemctl stop zgsd
+mv 0g-storage-node 0g-storage-nodeydk2
+```
+```
 git clone https://github.com/0glabs/0g-storage-node.git
 cd $HOME/0g-storage-node
-git stash
-git tag -d v0.3.4
-git fetch --all --tags
-git checkout 7d73ccd
+git checkout tags/v0.4.1
 ```
 ### Build edelim
 👉Not: uzun sürer.
@@ -69,14 +71,17 @@ git checkout 7d73ccd
 git submodule update --init
 cargo build --release
 ```
+```
+$HOME/0g-storage-node/target/release/zgs_node --version
+```
 ### varyasyonları atayalım
 👉Not: bişi değişmicek
 ```
 export ZGS_LOG_DIR="$HOME/0g-storage-node/run/log"
 export ZGS_LOG_CONFIG_FILE="$HOME/0g-storage-node/run/log_config"
-export LOG_CONTRACT_ADDRESS="0xB7e39604f47c0e4a6Ad092a281c1A8429c2440d3"
-export MINE_CONTRACT="0x6176AA095C47A7F79deE2ea473B77ebf50035421"
-export ZGS_LOG_SYNC_BLOCK=401178
+export LOG_CONTRACT_ADDRESS="0xbD2C3F0E65eDF5582141C35969d66e34629cC768"
+export MINE_CONTRACT="0x6815F41019255e00D6F34aAB8397a6Af5b6D806f"
+export ZGS_LOG_SYNC_BLOCK=595059
 export WATCH_LOOP_WAIT_TIME_MS=1000
 ```
 ### 1.private key alalım validator çalışan yerden
@@ -111,12 +116,12 @@ s|network_enr_address = ""|network_enr_address = "'"$ZGS_IP"'"|g
 ```
 ```
 sed -i '
-s|^log_sync_start_block_number = .*|log_sync_start_block_number = '"$ZGS_LOG_SYNC_BLOCK"'|g
-s|^log_config_file = .*|log_config_file = "'"$ZGS_LOG_CONFIG_FILE"'"|g
-s|^log_directory = .*|log_directory = "'"$ZGS_LOG_DIR"'"|g
-s|^mine_contract_address = .*|mine_contract_address = "'"$MINE_CONTRACT"'"|g
-s|^log_contract_address = .*|log_contract_address = "'"$LOG_CONTRACT_ADDRESS"'"|g
-s|^watch_loop_wait_time_ms = .*|watch_loop_wait_time_ms = '"$WATCH_LOOP_WAIT_TIME_MS"'|g
+s|# log_sync_start_block_number = .*|log_sync_start_block_number = '"$ZGS_LOG_SYNC_BLOCK"'|g
+s|# log_config_file = .*|log_config_file = "'"$ZGS_LOG_CONFIG_FILE"'"|g
+s|# log_directory = .*|log_directory = "'"$ZGS_LOG_DIR"'"|g
+s|# mine_contract_address = .*|mine_contract_address = "'"$MINE_CONTRACT"'"|g
+s|# log_contract_address = .*|log_contract_address = "'"$LOG_CONTRACT_ADDRESS"'"|g
+s|# watch_loop_wait_time_ms = .*|watch_loop_wait_time_ms = '"$WATCH_LOOP_WAIT_TIME_MS"'|g
 ' $HOME/0g-storage-node/run/config.toml
 ```
 ## Servisi kuralım
@@ -145,7 +150,7 @@ JSON_PORT=8545
 ```
 ```
 BLOCKCHAIN_RPC_ENDPOINT="http://$(wget -qO- eth0.me):$JSON_PORT"
-sed -i 's|^blockchain_rpc_endpoint = ".*"|blockchain_rpc_endpoint = "'"$BLOCKCHAIN_RPC_ENDPOINT"'"|' $HOME/0g-storage-node/run/config.toml
+sed -i 's|# blockchain_rpc_endpoint = ".*"|blockchain_rpc_endpoint = "'"$BLOCKCHAIN_RPC_ENDPOINT"'"|' $HOME/0g-storage-node/run/config.toml
 echo "export BLOCKCHAIN_RPC_ENDPOINT=\"$BLOCKCHAIN_RPC_ENDPOINT\"" >> ~/.bash_profile
 echo "BLOCKCHAIN_RPC_ENDPOINT: $BLOCKCHAIN_RPC_ENDPOINT"
 ```
@@ -153,18 +158,11 @@ echo "BLOCKCHAIN_RPC_ENDPOINT: $BLOCKCHAIN_RPC_ENDPOINT"
 👉NOT: buraya ip yaz yazan yere og nodun kurulu olduğu sunucu ipsi yazılacak. tabi sunucunuzda 8545 yerine yada hangi portta ise o portuda ufw allow PORT yazarak açın. portuda yazıcanız altaki ilk satırda
 ```
 BLOCKCHAIN_RPC_ENDPOINT="http://buraya-ip-yaz:PORT"
-sed -i 's|^blockchain_rpc_endpoint = ".*"|blockchain_rpc_endpoint = "'"$BLOCKCHAIN_RPC_ENDPOINT"'"|' $HOME/0g-storage-node/run/config.toml
+sed -i 's|# blockchain_rpc_endpoint = ".*"|blockchain_rpc_endpoint = "'"$BLOCKCHAIN_RPC_ENDPOINT"'"|' $HOME/0g-storage-node/run/config.toml
 echo "export BLOCKCHAIN_RPC_ENDPOINT=\"$BLOCKCHAIN_RPC_ENDPOINT\"" >> ~/.bash_profile
 echo "BLOCKCHAIN_RPC_ENDPOINT: $BLOCKCHAIN_RPC_ENDPOINT"
 ```
-### Bootnode peer ekleyelim (tşkler kaplan )
-NOT: altaki kodla dosyay girin ve network_boot_nodes yazan yeri aşağıdakini yapıstırın eskini silip
-```
-nano 0g-storage-node/run/config.toml
-```
-```
-network_boot_nodes = ["/ip4/54.219.26.22/udp/1234/p2p/16Uiu2HAmPxGNWu9eVAQPJww79J32pTJLKGcpjRMb4Qb8xxKkyuG1","/ip4/52.52.127.117/udp/1234/p2p/16Uiu2HAm93Hd5azfhkGBbkx1zero3nYHvfjQYM2NtiW4R3r5bE2g","/ip4/18.167.69.68/udp/1234/p2p/16Uiu2HAm2k6ua2mGgvZ8rTMV8GhpW71aVzkQWy7D37TTDuLCpgmX","/ip4/54.219.26.22/udp/1234/p2p/16Uiu2HAmTVDGNhkHD98zDnJxQWu3i1FL1aFYeh9wiQTNu4pDCgps","/ip4/52.52.127.117/udp/1234/p2p/16Uiu2HAkzRjxK2gorngB1Xq84qDrT4hSVznYDHj6BkbaE4SGx9oS"]
-```
+
 ### Başlatalım
 ```
 sudo systemctl daemon-reload
@@ -187,53 +185,6 @@ tail -f ~/0g-storage-node/run/log/zgs.log.$(TZ=UTC date +%Y-%m-%d)
 Direk eşleşmeyi tx üzerinden takip etmek için
 ```
 tail -f ~/0g-storage-node/run/log/zgs.log.$(TZ=UTC date +%Y-%m-%d) | grep tx_seq
-```
-## ------ GUNCELLEME------
-NOT: eski repoyu ydkledik içndeki configden private keyinizi ve rpcnize bakabilirsiniz. diğer ayarlamalar otomatik geliyor artık.
-```
-cd
-sudo systemctl stop zgsd
-```
-```
-cd
-mv /root/0g-storage-node /root/0g-storage-nodeydk
-git clone -b v0.3.4 https://github.com/0glabs/0g-storage-node.git
-cd $HOME/0g-storage-node
-git submodule update --init
-cargo build --release
-```
-```
-$HOME/0g-storage-node/target/release/zgs_node --version
-```
-
-```
-MEKEY=privatekeyini yaz
-MERPC=validator nodunun rpcsini(portlu) yada sağlam bir indexerli rpc yazıcaz.
-```
-
-```
-sudo tee /etc/systemd/system/zgsd.service > /dev/null <<EOF
-[Unit]
-Description=ZGS Node
-After=network.target
-
-[Service]
-User=root
-WorkingDirectory=$HOME/0g-storage-node/run
-ExecStart=$HOME/0g-storage-node/target/release/zgs_node --config config-testnet.toml --miner-key $MEKEY --blockchain-rpc-endpoint $MERPC
-Restart=on-failure
-RestartSec=10
-LimitNOFILE=65535
-
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-```
-sudo systemctl daemon-reload && sudo systemctl restart zgsd
-```
-```
-tail -f ~/0g-storage-node/run/log/zgs.log.$(TZ=UTC date +%Y-%m-%d)
 ```
 ```
 curl -X POST http://localhost:5678 -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"zgs_getStatus","params":[],"id":1}'  | jq

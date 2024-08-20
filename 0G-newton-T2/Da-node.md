@@ -59,12 +59,15 @@ source ~/.cargo/env
 ```
 ### Repoyu çekelim
 ```
-git clone https://github.com/0glabs/0g-da-node.git
-```
-```
-cd && cd 0g-da-node
-```
-```
+cd
+systemctl stop da
+mv 0g-da-node 0g-da-nodeydk
+git clone -b v1.0.2 https://github.com/0glabs/0g-da-node.git
+cd $HOME/0g-da-node
+git stash
+git fetch --all --tags
+git checkout 31060b7 
+git submodule update --init
 cargo build --release
 ```
 ```
@@ -118,7 +121,7 @@ encoder_params_dir = "params/"
 # grpc server listen address
 grpc_listen_address = "0.0.0.0:34000"
 # chain eth rpc endpoint
-eth_rpc_endpoint = "http://ognode-sunucu-ipsi-yaz:56545"
+eth_rpc_endpoint = "http://ognode-sunucu-ipsi-yaz:56545" # node çalıştırmıyorsanız bunu kullanabilirsiniz https://evmrpc-testnet.0g.ai VEDE buyazının basındaki kare işretinden itibaren kaldırın.burası bilgilendirme amaçlı belki sıkıntı yapabilir
 # public grpc service socket address to register in DA contract
 # ip:34000 (keep same port as the grpc listen address)
 # or if you have dns, fill your dns
