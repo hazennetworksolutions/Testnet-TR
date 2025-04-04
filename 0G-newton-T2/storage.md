@@ -63,7 +63,8 @@ mv 0g-storage-node 0g-storage-nodeydk4
 ```
 git clone https://github.com/0glabs/0g-storage-node.git
 cd $HOME/0g-storage-node
-git checkout tags/v0.6.0
+git fetch --all --tags
+git checkout v0.8.7
 ```
 ### Build edelim
 👉Not: uzun sürer.
@@ -146,9 +147,11 @@ systemctl stop zgsd
 
 ```
 cd
+systemctl stop zgsd
+cp -r 0g-storage-node 0g-storage-nodeydk060
 cd $HOME/0g-storage-node
 git fetch --all --tags
-git checkout v0.6.0
+git checkout v0.8.7
 git submodule update --init
 cargo build --release
 ```
